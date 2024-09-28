@@ -54,7 +54,7 @@ export default class EditDesktopFilesExtension extends Extension {
 
                     // Add the 'Edit' MenuItem
                     let editMenuItem = this.addAction(_('Edit'), () => {
-                        GLib.spawn_command_line_async(`gapplication launch org.gnome.TextEditor ${appInfo.filename}`);
+                        GLib.spawn_command_line_async(`gapplication launch org.gnome.TextEditor '${appInfo.filename}'`);
                         Main.overview.hide();
                     })
 
