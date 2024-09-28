@@ -44,14 +44,12 @@ export default class EditDesktopFilesExtension extends Extension {
 
                     // Suitably awful name to ensure it doesn't conflict with an existing/future property
                     if (this._editDesktopFilesExtensionMenuItem) {
-                        originalMethod.call(this, animate);
-                        return
+                        return originalMethod.call(this, animate);
                     }
 
                     const appInfo = this._app?.app_info;
                     if (!appInfo) {
-                        originalMethod.call(this, animate);
-                        return
+                        return originalMethod.call(this, animate);
                     }
 
                     // Add the 'Edit' MenuItem
@@ -77,7 +75,7 @@ export default class EditDesktopFilesExtension extends Extension {
                     affectedMenus.push(this)
                     addedMenuItems.push(editMenuItem)
 
-                    originalMethod.call(this, animate);
+                    return originalMethod.call(this, animate);
                 };
             }
         );
