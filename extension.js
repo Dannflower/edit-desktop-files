@@ -1,4 +1,5 @@
-/* extension.js
+/*
+ * Edit Desktop Files for GNOME Shell 45+
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,6 +16,7 @@
  *
  * SPDX-License-Identifier: GPL-2.0-or-later
  */
+import GLib from 'gi://GLib';
 import {Extension, InjectionManager} from 'resource:///org/gnome/shell/extensions/extension.js';
 import {AppMenu} from 'resource:///org/gnome/shell/ui/appMenu.js';
 
@@ -40,8 +42,19 @@ export default class PlainExampleExtension extends Extension {
                 const metadata = this.metadata;
 
                 return function (app) {
-                    console.debug(`${metadata.name}: it's mine now!`);
                     originalMethod.call(this, app);
+
+                    const appInfo = this._app?.app_info;
+                    if (!appInfo) {
+                        // Probably a window backed app, ignore it
+                        return
+                    }
+
+                    this.addAction(_('Edit'), () => {
+                        // console.debug(`${metadata.name}: ${this._app.app_info.filename}`);
+                        // console.debug(`${metadata.name}: ${this._app.get_id()}`);
+                        GLib.spawn_command_line_async(`gapplication launch org.gnome.TextEditor ${appInfo.filename}`);
+                    })
                 };
             }
         );
