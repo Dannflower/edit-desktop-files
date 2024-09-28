@@ -19,6 +19,7 @@
 import GLib from 'gi://GLib';
 import {Extension, InjectionManager} from 'resource:///org/gnome/shell/extensions/extension.js';
 import {AppMenu} from 'resource:///org/gnome/shell/ui/appMenu.js';
+import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 
 export default class PlainExampleExtension extends Extension {
 
@@ -43,6 +44,7 @@ export default class PlainExampleExtension extends Extension {
                         // console.debug(`${metadata.name}: ${this._app.app_info.filename}`);
                         // console.debug(`${metadata.name}: ${this._app.get_id()}`);
                         GLib.spawn_command_line_async(`gapplication launch org.gnome.TextEditor ${appInfo.filename}`);
+                        Main.overview.hide();
                     })
                 };
             }
