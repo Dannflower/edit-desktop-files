@@ -27,6 +27,7 @@ export default class PlainExampleExtension extends Extension {
         this._injectionManager = new InjectionManager();
 
         // Extend the AppMenu's setApp method to add an edit button
+        // See: https://gitlab.gnome.org/GNOME/gnome-shell/-/blob/main/js/ui/appMenu.js
         this._injectionManager.overrideMethod(AppMenu.prototype, 'setApp',
             originalMethod => {
                 const metadata = this.metadata;
@@ -36,16 +37,25 @@ export default class PlainExampleExtension extends Extension {
 
                     const appInfo = this._app?.app_info;
                     if (!appInfo) {
-                        // Probably a window backed app, ignore it
                         return
                     }
 
-                    this.addAction(_('Edit'), () => {
-                        // console.debug(`${metadata.name}: ${this._app.app_info.filename}`);
-                        // console.debug(`${metadata.name}: ${this._app.get_id()}`);
+                    let editMenuItem = this.addAction(_('Edit'), () => {
                         GLib.spawn_command_line_async(`gapplication launch org.gnome.TextEditor ${appInfo.filename}`);
                         Main.overview.hide();
                     })
+
+                    // Move the menu item to be after App Details
+                    let menuItems = this._getMenuItems()
+                    for (let i = 0; i < menuItems.length; i++) {
+                        let menuItem = menuItems[i]
+                        if (menuItem.label) {
+                            if (menuItem.label.text == 'App Details') {
+                                this.moveMenuItem(editMenuItem, i+1)
+                                break;
+                            }
+                        }
+                    }
                 };
             }
         );
