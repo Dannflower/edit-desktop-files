@@ -1,0 +1,8 @@
+{
+  "name": "Edit Desktop File",
+  "description": "Edit desktop files by right-clicking their app icon.",
+  "uuid": "editdesktopfiles@dannflower.github.io",
+  "shell-version": [
+    "46"
+  ]
+}
