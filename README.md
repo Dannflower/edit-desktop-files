@@ -1,4 +1,4 @@
-# Edit Desktop Files Gnome-Shell Extension
+# Edit Desktop Files GNOME Shell Extension
 
 ### Commands
 
