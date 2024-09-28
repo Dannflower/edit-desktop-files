@@ -20,17 +20,6 @@ import GLib from 'gi://GLib';
 import {Extension, InjectionManager} from 'resource:///org/gnome/shell/extensions/extension.js';
 import {AppMenu} from 'resource:///org/gnome/shell/ui/appMenu.js';
 
-
-/**
- * Create a new indicator.
- *
- * @param {string} [name] - A name for the indicator
- * @returns {PanelMenu.Button} A new indicator
- */
-export function createIndicator(name = 'Unknown') {
-    return new PanelMenu.Button(0.0, name, true);
-}
-
 export default class PlainExampleExtension extends Extension {
 
     enable() {
