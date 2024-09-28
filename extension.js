@@ -43,7 +43,7 @@ export default class EditDesktopFilesExtension extends Extension {
                 return function (animate) {
 
                     // Suitably awful name to ensure it doesn't conflict with an existing/future property
-                    if (this._editDesktopFilesExtensionMenuItem && this._editDesktopFilesExtensionMenuItem.destroy) {
+                    if (this._editDesktopFilesExtensionMenuItem) {
                         originalMethod.call(this, animate);
                         return
                     }
