@@ -13,12 +13,12 @@ G_MESSAGES_DEBUG="GNOME Shell" WAYLAND_DISPLAY=wayland-1 dbus-run-session -- gno
 
 ### Enable the extension in the nested session
 ```sh
-gnome-extensions enable editdesktopfiles@dannflower.github.io
+gnome-extensions enable editdesktopfiles@dannflower
 ```
 
 ### View the preferences window
 ```sh
-gnome-extensions prefs editdesktopfiles@dannflower.github.io
+gnome-extensions prefs editdesktopfiles@dannflower
 ```
 
 ### Recompile schemas
