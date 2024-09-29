@@ -18,15 +18,24 @@ export default class EditDesktopFilesPreferences extends ExtensionPreferences {
         });
         page.add(group);
 
-        // Create a new preferences row
-        const row = new Adw.SwitchRow({
+        // Create the two rows and add them to the group
+        const useCmdRow = new Adw.SwitchRow({
             title: _('Use Custom Command'),
             subtitle: _('The desktop file is opened with the GNOME Text Editor by default'),
         });
-        group.add(row);
+        group.add(useCmdRow);
+        
+        const cmdRow = new Adw.EntryRow({
+            title: _('Custom Command'),
+        });
+        group.add(cmdRow);
 
-        // Create a settings object and bind the row to the `show-indicator` key
+        // Bind the settings to the rows
         window._settings = this.getSettings();
-        window._settings.bind('use-custom-edit-command', row, 'active', Gio.SettingsBindFlags.DEFAULT);
+        window._settings.bind('use-custom-edit-command', useCmdRow, 'active', Gio.SettingsBindFlags.DEFAULT);
+        window._settings.bind('custom-edit-command', cmdRow, 'text', Gio.SettingsBindFlags.DEFAULT);
+
+        // Only allow interaction with the cmdRow if the user has selected to use a custom edit command
+        window._settings.bind('use-custom-edit-command', cmdRow, 'sensitive', Gio.SettingsBindFlags.DEFAULT);
     }
 }
