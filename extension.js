@@ -23,14 +23,10 @@ import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 
 export default class EditDesktopFilesExtension extends Extension {
 
-    constructor(metadata) {
-        super(metadata)
-        this.affectedMenus = []
-        this.addedMenuItems = []
-    }
-
     enable() {
         this._injectionManager = new InjectionManager();
+        this.affectedMenus = []
+        this.addedMenuItems = []
 
         // Extend the AppMenu's open method to add an 'Edit' MenuItem
         // See: https://gitlab.gnome.org/GNOME/gnome-shell/-/blob/main/js/ui/appMenu.js
@@ -63,7 +59,7 @@ export default class EditDesktopFilesExtension extends Extension {
                     for (let i = 0; i < menuItems.length; i++) {
                         let menuItem = menuItems[i]
                         if (menuItem.label) {
-                            if (menuItem.label.text == 'App Details') {
+                            if (menuItem.label.text == _('App Details')) {
                                 this.moveMenuItem(editMenuItem, i+1)
                                 break;
                             }
@@ -95,6 +91,7 @@ export default class EditDesktopFilesExtension extends Extension {
             menuItem.destroy();
         }
 
-        this.addedMenuItems = []
+        this.addedMenuItems = null
+        this.affectedMenus = null
     }
 }
