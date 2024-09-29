@@ -24,10 +24,15 @@ import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 export default class EditDesktopFilesExtension extends Extension {
 
     enable() {
+        this._settings = this.getSettings();
         this._injectionManager = new InjectionManager();
         this._affectedMenus = []
         this._addedMenuItems = []
 
+        this._settings.connect('changed::use-custom-edit-command', (settings, key) => {
+            this.handleEditCommandChange();
+        });
+        
         // Extend the AppMenu's open method to add an 'Edit' MenuItem
         // See: https://gitlab.gnome.org/GNOME/gnome-shell/-/blob/main/js/ui/appMenu.js
         this._injectionManager.overrideMethod(AppMenu.prototype, 'open',
@@ -77,6 +82,15 @@ export default class EditDesktopFilesExtension extends Extension {
         );
     }
 
+    disable() {
+        this._settings = null
+        this._injectionManager.clear();
+        this._injectionManager = null;
+        this.removeAllMenuItems()
+        this._addedMenuItems = null
+        this._affectedMenus = null
+    }
+
     removeAllMenuItems() {
         // Delete the added properties
         for (let menu of this._affectedMenus) {
@@ -92,15 +106,18 @@ export default class EditDesktopFilesExtension extends Extension {
         this._affectedMenus = []
     }
 
-    handleEditCommandChange() {
-        this.removeAllMenuItems()
+    buildEditCommand() {
+        let useCustomCommand = this._settings.get_value("use-custom-edit-command")
+
+        if (useCustomCommand) {
+            console.debug("Using custom edit command")
+        } else {
+            console.debug("Using default edit command")
+        }
     }
 
-    disable() {
-        this._injectionManager.clear();
-        this._injectionManager = null;
+    handleEditCommandChange() {
         this.removeAllMenuItems()
-        this._addedMenuItems = null
-        this._affectedMenus = null
+        this.buildEditCommand()
     }
 }
