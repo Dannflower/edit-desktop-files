@@ -25,16 +25,16 @@ export default class EditDesktopFilesExtension extends Extension {
 
     enable() {
         this._injectionManager = new InjectionManager();
-        this.affectedMenus = []
-        this.addedMenuItems = []
+        this._affectedMenus = []
+        this._addedMenuItems = []
 
         // Extend the AppMenu's open method to add an 'Edit' MenuItem
         // See: https://gitlab.gnome.org/GNOME/gnome-shell/-/blob/main/js/ui/appMenu.js
         this._injectionManager.overrideMethod(AppMenu.prototype, 'open',
             originalMethod => {
                 const metadata = this.metadata;
-                const affectedMenus = this.affectedMenus;
-                const addedMenuItems = this.addedMenuItems;
+                const affectedMenus = this._affectedMenus;
+                const addedMenuItems = this._addedMenuItems;
 
                 return function (animate) {
 
@@ -77,21 +77,30 @@ export default class EditDesktopFilesExtension extends Extension {
         );
     }
 
-    disable() {
-        this._injectionManager.clear();
-        this._injectionManager = null;
-
+    removeAllMenuItems() {
         // Delete the added properties
-        for (let menu of this.affectedMenus) {
+        for (let menu of this._affectedMenus) {
             delete menu._editDesktopFilesExtensionMenuItem
         }
         
         // Delete all added MenuItems
-        for (let menuItem of this.addedMenuItems) {
+        for (let menuItem of this._addedMenuItems) {
             menuItem.destroy();
         }
 
-        this.addedMenuItems = null
-        this.affectedMenus = null
+        this._addedMenuItems = []
+        this._affectedMenus = []
+    }
+
+    handleEditCommandChange() {
+        this.removeAllMenuItems()
+    }
+
+    disable() {
+        this._injectionManager.clear();
+        this._injectionManager = null;
+        this.removeAllMenuItems()
+        this._addedMenuItems = null
+        this._affectedMenus = null
     }
 }
