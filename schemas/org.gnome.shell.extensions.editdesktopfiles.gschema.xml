@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+  <schema id="org.gnome.shell.extensions.editdesktopfiles" path="/org/gnome/shell/extensions/editdesktopfiles/">
+    <key name="use-custom-edit-command" type="b">
+      <default>false</default>
+    </key>
+    <key name="custom-edit-command" type="s">
+      <default>"gapplication launch org.gnome.TextEditor %U"</default>
+    </key>
+  </schema>
+</schemalist>

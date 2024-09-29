@@ -3,6 +3,7 @@
   "description": "Edit desktop files by right-clicking their app icon.",
   "uuid": "editdesktopfiles@dannflower.github.io",
   "url": "https://github.com/Dannflower/edit-desktop-files",
+  "settings-schema": "org.gnome.shell.extensions.editdesktopfiles",
   "shell-version": [
     "46"
   ]
