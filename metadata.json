@@ -2,6 +2,7 @@
   "name": "Edit Desktop Files",
   "description": "Edit desktop files by right-clicking their app icon.",
   "uuid": "editdesktopfiles@dannflower.github.io",
+  "url": "https://github.com/Dannflower/edit-desktop-files",
   "shell-version": [
     "46"
   ]
