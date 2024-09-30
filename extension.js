@@ -29,15 +29,12 @@ export default class EditDesktopFilesExtension extends Extension {
         this._affectedMenus = []
         this._addedMenuItems = []
 
-        this._settings.connect('changed::use-custom-edit-command', (settings, key) => {
-            this.handleEditCommandChange();
-        });
-        
         // Extend the AppMenu's open method to add an 'Edit' MenuItem
         // See: https://gitlab.gnome.org/GNOME/gnome-shell/-/blob/main/js/ui/appMenu.js
         this._injectionManager.overrideMethod(AppMenu.prototype, 'open',
             originalMethod => {
                 const metadata = this.metadata;
+                const settings = this.getSettings();
                 const affectedMenus = this._affectedMenus;
                 const addedMenuItems = this._addedMenuItems;
 
@@ -55,8 +52,23 @@ export default class EditDesktopFilesExtension extends Extension {
 
                     // Add the 'Edit' MenuItem
                     let editMenuItem = this.addAction(_('Edit'), () => {
-                        GLib.spawn_command_line_async(`gapplication launch org.gnome.TextEditor '${appInfo.filename}'`);
-                        Main.overview.hide();
+                        // Open the GNOME Text Editor by default, otherwise use the command provided by the user
+                        let editCommand = `gapplication launch org.gnome.TextEditor '${appInfo.filename}'`
+                        if (settings.get_boolean("use-custom-edit-command")) {
+                            let customEditCommand = settings.get_string("custom-edit-command")
+                            // If the user forgot to include %U in the command, fallback to the default with a warning
+                            if (customEditCommand.indexOf('%U') != -1) {
+                                editCommand = customEditCommand.replace('%U', `'${appInfo.filename}'`)
+                            } else {
+                                console.warn(`${metadata.name}: Custom edit command is missing '%U', falling back to default GNOME Text Editor`)
+                            }
+                        }
+
+                        GLib.spawn_command_line_async(editCommand);
+                        
+                        if(Main.overview.visible) {
+                            Main.overview.hide();
+                        }
                     })
 
                     // Move the 'Edit' MenuItem to be after 'App Details' MenuItem
@@ -71,7 +83,7 @@ export default class EditDesktopFilesExtension extends Extension {
                         }
                     }
 
-                    // Keep track of menus that have been affected
+                    // Keep track of menus that have been affected so they can be cleaned up later
                     this._editDesktopFilesExtensionMenuItem = editMenuItem
                     affectedMenus.push(this)
                     addedMenuItems.push(editMenuItem)
@@ -104,20 +116,5 @@ export default class EditDesktopFilesExtension extends Extension {
 
         this._addedMenuItems = []
         this._affectedMenus = []
-    }
-
-    buildEditCommand() {
-        let useCustomCommand = this._settings.get_value("use-custom-edit-command")
-
-        if (useCustomCommand) {
-            console.debug("Using custom edit command")
-        } else {
-            console.debug("Using default edit command")
-        }
-    }
-
-    handleEditCommandChange() {
-        this.removeAllMenuItems()
-        this.buildEditCommand()
     }
 }

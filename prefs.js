@@ -15,18 +15,22 @@ export default class EditDesktopFilesPreferences extends ExtensionPreferences {
 
         const group = new Adw.PreferencesGroup({
             title: _('General'),
+            description: _('The desktop file is opened with the GNOME Text Editor by default.\n\n' + 
+                'Custom commands must include "%U" to indicate where the filepath to the desktop file should be inserted. ' +
+                'If missing, the default command will be used instead.\n'
+            ),
         });
         page.add(group);
 
         // Create the two rows and add them to the group
         const useCmdRow = new Adw.SwitchRow({
-            title: _('Use Custom Command'),
-            subtitle: _('The desktop file is opened with the GNOME Text Editor by default'),
+            title: _('Use Custom Edit Command'),
+            subtitle: _('Whether to edit desktop files using a custom command'),
         });
         group.add(useCmdRow);
         
         const cmdRow = new Adw.EntryRow({
-            title: _('Custom Command'),
+            title: _('Custom Edit Command'),
         });
         group.add(cmdRow);
 
