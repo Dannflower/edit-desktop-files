@@ -38,16 +38,16 @@ export default class EditDesktopFilesExtension extends Extension {
                 const affectedMenus = this._affectedMenus;
                 const addedMenuItems = this._addedMenuItems;
 
-                return function (animate) {
+                return function (...args) {
 
                     // Suitably awful name to ensure it doesn't conflict with an existing/future property
                     if (this._editDesktopFilesExtensionMenuItem) {
-                        return originalMethod.call(this, animate);
+                        return originalMethod.call(this, ...args);
                     }
 
                     const appInfo = this._app?.app_info;
                     if (!appInfo) {
-                        return originalMethod.call(this, animate);
+                        return originalMethod.call(this, ...args);
                     }
 
                     // Add the 'Edit' MenuItem
@@ -88,7 +88,7 @@ export default class EditDesktopFilesExtension extends Extension {
                     affectedMenus.push(this)
                     addedMenuItems.push(editMenuItem)
 
-                    return originalMethod.call(this, animate);
+                    return originalMethod.call(this, ...args);
                 };
             }
         );
