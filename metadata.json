@@ -5,6 +5,8 @@
   "url": "https://github.com/Dannflower/edit-desktop-files",
   "settings-schema": "org.gnome.shell.extensions.editdesktopfiles",
   "shell-version": [
-    "46"
+    "45",
+    "46",
+    "47"
   ]
 }
