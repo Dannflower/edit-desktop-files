@@ -21,23 +21,33 @@ import {Extension, InjectionManager, gettext} from 'resource:///org/gnome/shell/
 import {AppMenu} from 'resource:///org/gnome/shell/ui/appMenu.js';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 
+/*
+* The Edit Desktop Files extension provides users with an "Edit" button on the pop-up menu
+* that appears when right-clicking an app icon in the app grid or dash.
+* When clicked, the backing desktop file is opened in an editor.
+*
+* This is done by injecting a function to run prior to the gnome-shell AppMenu's 'open' method.
+* The function inserts a new "Edit" MenuItem that, when clicked, either opens the backing desktop
+* file with the GNOME Text Editor (default) or a custom command supplied by the user.
+*/
 export default class EditDesktopFilesExtension extends Extension {
 
     enable() {
         this._settings = this.getSettings();
         this._injectionManager = new InjectionManager();
-        this._affectedMenus = []
+        this._modifiedMenus = []
         this._addedMenuItems = []
-        // Call gettext here explicitly so "Edit" can be localized as part of the extension
+
+        // Call gettext here explicitly so "Edit" can be localized as part of this extension
         let localizedEditStr = gettext('Edit')
 
-        // Extend the AppMenu's open method to add an 'Edit' MenuItem
+        // Extend the AppMenu's 'open' method to add an 'Edit' MenuItem
         // See: https://gitlab.gnome.org/GNOME/gnome-shell/-/blob/main/js/ui/appMenu.js
         this._injectionManager.overrideMethod(AppMenu.prototype, 'open',
             originalMethod => {
                 const metadata = this.metadata;
                 const settings = this.getSettings();
-                const affectedMenus = this._affectedMenus;
+                const modifiedMenus = this._modifiedMenus;
                 const addedMenuItems = this._addedMenuItems;
 
                 return function (...args) {
@@ -47,6 +57,7 @@ export default class EditDesktopFilesExtension extends Extension {
                         return originalMethod.call(this, ...args);
                     }
 
+                    // Don't display the menu item for windows not backed by a desktop file
                     const appInfo = this._app?.app_info;
                     if (!appInfo) {
                         return originalMethod.call(this, ...args);
@@ -73,7 +84,7 @@ export default class EditDesktopFilesExtension extends Extension {
                         }
                     })
 
-                    // Move the 'Edit' MenuItem to be after 'App Details' MenuItem
+                    // Move the 'Edit' MenuItem to be after the 'App Details' MenuItem
                     let menuItems = this._getMenuItems()
                     for (let i = 0; i < menuItems.length; i++) {
                         let menuItem = menuItems[i]
@@ -87,7 +98,7 @@ export default class EditDesktopFilesExtension extends Extension {
 
                     // Keep track of menus that have been affected so they can be cleaned up later
                     this._editDesktopFilesExtensionMenuItem = editMenuItem
-                    affectedMenus.push(this)
+                    modifiedMenus.push(this)
                     addedMenuItems.push(editMenuItem)
 
                     return originalMethod.call(this, ...args);
@@ -102,12 +113,12 @@ export default class EditDesktopFilesExtension extends Extension {
         this._injectionManager = null;
         this.removeAllMenuItems()
         this._addedMenuItems = null
-        this._affectedMenus = null
+        this._modifiedMenus = null
     }
 
     removeAllMenuItems() {
         // Delete the added properties
-        for (let menu of this._affectedMenus) {
+        for (let menu of this._modifiedMenus) {
             delete menu._editDesktopFilesExtensionMenuItem
         }
         
@@ -117,6 +128,6 @@ export default class EditDesktopFilesExtension extends Extension {
         }
 
         this._addedMenuItems = []
-        this._affectedMenus = []
+        this._modifiedMenus = []
     }
 }
