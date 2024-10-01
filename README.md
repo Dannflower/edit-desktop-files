@@ -1,8 +1,8 @@
 # Edit Desktop Files GNOME Shell Extension
 
-Adds an `Edit` button to the popup-menu displayed when right-clicking app icons in the 'App Grid'. When clicked, it opens the `.desktop` file backing that app icon.
-
 ![Screenshot from 2024-09-28 18-21-00](https://github.com/user-attachments/assets/bcdee9ae-2886-47ac-a914-1a01d0f009ec)
+
+Adds an `Edit` button to the pop-up menu displayed when right-clicking app icons in the app grid or dash. When clicked, it opens the `.desktop` file backing that app icon. Includes support for custom edit commands, allowing the user wish to specify another program or additional options when opening the file.
 
 ## Development
 
