@@ -17,7 +17,7 @@
  * SPDX-License-Identifier: GPL-2.0-or-later
  */
 import GLib from 'gi://GLib';
-import {Extension, InjectionManager} from 'resource:///org/gnome/shell/extensions/extension.js';
+import {Extension, InjectionManager, gettext} from 'resource:///org/gnome/shell/extensions/extension.js';
 import {AppMenu} from 'resource:///org/gnome/shell/ui/appMenu.js';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 
@@ -28,6 +28,8 @@ export default class EditDesktopFilesExtension extends Extension {
         this._injectionManager = new InjectionManager();
         this._affectedMenus = []
         this._addedMenuItems = []
+        // Call gettext here explicitly so "Edit" can be localized as part of the extension
+        let localizedEditStr = gettext('Edit')
 
         // Extend the AppMenu's open method to add an 'Edit' MenuItem
         // See: https://gitlab.gnome.org/GNOME/gnome-shell/-/blob/main/js/ui/appMenu.js
@@ -51,7 +53,7 @@ export default class EditDesktopFilesExtension extends Extension {
                     }
 
                     // Add the 'Edit' MenuItem
-                    let editMenuItem = this.addAction(_('Edit'), () => {
+                    let editMenuItem = this.addAction(localizedEditStr, () => {
                         // Open the GNOME Text Editor by default, otherwise use the command provided by the user
                         let editCommand = `gapplication launch org.gnome.TextEditor '${appInfo.filename}'`
                         if (settings.get_boolean("use-custom-edit-command")) {

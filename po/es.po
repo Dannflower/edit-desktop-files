@@ -1,0 +1,53 @@
+#
+#  <>, YEAR-2024.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-09-30 18:47-0500\n"
+"PO-Revision-Date: 2024-09-30 19:26-0500\n"
+"Last-Translator:  <>\n"
+"Language-Team: Spanish\n"
+"Language: es\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Gtranslator 46.1\n"
+
+#: extension.js:31
+msgid "Edit"
+msgstr "Editar"
+
+#: prefs.js:11 prefs.js:17
+msgid "General"
+msgstr "General"
+
+#: prefs.js:18
+msgid ""
+"The desktop file is opened with the GNOME Text Editor by default.\n"
+"\n"
+"Custom commands must include \"%U\" to indicate where the filepath to the "
+"desktop file should be inserted. If missing, the default command will be "
+"used instead.\n"
+msgstr ""
+"El archivo de escritorio se abre con el Editor de Texto de GNOME de manera "
+"predeterminada.\n"
+"\n"
+"Los comandos personalizados deben incluir \"%U\" para indicar dónde se debe "
+"insertar la ruta al archivo de escritorio. Si falta, se utilizará el comando "
+"predeterminado.\n"
+
+#: prefs.js:27
+msgid "Use Custom Edit Command"
+msgstr "Usar comando de edición personalizado"
+
+#: prefs.js:28
+msgid "Whether to edit desktop files using a custom command"
+msgstr ""
+"Si se deben editar los archivos de escritorio usando un comando personalizado"
+
+#: prefs.js:33
+msgid "Custom Edit Command"
+msgstr "Comando de edición personalizado"

@@ -4,6 +4,7 @@
   "uuid": "editdesktopfiles@dannflower",
   "url": "https://github.com/Dannflower/edit-desktop-files",
   "settings-schema": "org.gnome.shell.extensions.editdesktopfiles",
+  "gettext-domain": "editdesktopfiles@dannflower",
   "shell-version": [
     "45",
     "46",

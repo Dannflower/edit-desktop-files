@@ -6,22 +6,27 @@ Adds an `Edit` button to the popup-menu displayed when right-clicking app icons 
 
 ## Development
 
-### Start the nested Wayland session
+#### Pack the extension for release
+```sh
+gnome-extensions pack
+```
+
+#### Start the nested Wayland session
 ```sh
 G_MESSAGES_DEBUG="GNOME Shell" WAYLAND_DISPLAY=wayland-1 dbus-run-session -- gnome-shell --nested --wayland
 ```
 
-### Enable the extension in the nested session
+#### Enable the extension in the nested session
 ```sh
 gnome-extensions enable editdesktopfiles@dannflower
 ```
 
-### View the preferences window
+#### View the preferences window
 ```sh
 gnome-extensions prefs editdesktopfiles@dannflower
 ```
 
-### Recompile schemas
+#### Recompile schemas
 ```sh
 glib-compile-schemas schemas/
 ```
