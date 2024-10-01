@@ -4,6 +4,12 @@
 
 Adds an `Edit` button to the pop-up menu displayed when right-clicking app icons in the app grid or dash. When clicked, it opens the `.desktop` file backing that app icon. Includes support for custom edit commands, allowing the user to specify another program or additional options when opening the file.
 
+## Installation
+
+Get the latest release from the [GNOME Extensions site](https://extensions.gnome.org/extension/7397/edit-desktop-files/)
+
+Alternatively, download the extension bundle from a [release](https://github.com/Dannflower/edit-desktop-files/releases).
+
 ## Development
 
 #### Pack the extension for release
