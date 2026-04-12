@@ -18,8 +18,8 @@
  */
 import GLib from 'gi://GLib'
 import Gio from 'gi://Gio';
-import {Extension, InjectionManager, gettext} from 'resource:///org/gnome/shell/extensions/extension.js'
-import {AppMenu} from 'resource:///org/gnome/shell/ui/appMenu.js'
+import { Extension, InjectionManager, gettext } from 'resource:///org/gnome/shell/extensions/extension.js'
+import { AppMenu } from 'resource:///org/gnome/shell/ui/appMenu.js'
 import * as Main from 'resource:///org/gnome/shell/ui/main.js'
 
 /*
@@ -36,12 +36,14 @@ export default class EditDesktopFilesExtension extends Extension {
         this._modifiedMenus = []
         this._addedEditMenuItems = []
         this._addedOpenLocationMenuItems = []
+        this._addedHideDesktopEntryMenuItems = []
 
         // Call gettext here explicitly so the MenuItems can be localized as part of this extension
         // as calling gettext inside the injected method will cause the strings to be localized as
         // part of the Gnome Shell itself.
         let localizedEditStr = gettext('Edit Entry')
         let localizedOpenLocationStr = gettext('Open Entry Location')
+        let localizedHideStr = gettext('Hide Entry')
 
         // Listen for changes to the 'hide' settings
         this._settings.connect('changed::hide-edit-menu-item', (settings, key) => {
@@ -54,6 +56,11 @@ export default class EditDesktopFilesExtension extends Extension {
                 this.removeOpenLocationMenuItems()
             }
         });
+        this._settings.connect('changed::hide-hide-desktop-entry-menu-item', (settings, key) => {
+            if (settings.get_boolean(key)) {
+                this.removeHideDesktopEntryMenuItems()
+            }
+        });
 
         // Extend the AppMenu's 'open' method to add an 'Edit' MenuItem
         // See: https://gitlab.gnome.org/GNOME/gnome-shell/-/blob/main/js/ui/appMenu.js
@@ -64,9 +71,11 @@ export default class EditDesktopFilesExtension extends Extension {
                 const modifiedMenus = this._modifiedMenus
                 const addedEditMenuItems = this._addedEditMenuItems
                 const addedOpenLocationMenuItems = this._addedOpenLocationMenuItems
+                const addedHideDesktopEntryMenuItems = this._addedHideDesktopEntryMenuItems
 
                 const openDesktopFile = this.openDesktopFile
                 const openDesktopFileLocation = this.openDesktopFileLocation
+                const hideDesktopEntry = this.hideDesktopEntry
                 const hideOverview = this.hideOverview
                 const moveMenuItemAfter = this.moveMenuItemAfter
 
@@ -112,6 +121,21 @@ export default class EditDesktopFilesExtension extends Extension {
                         addedOpenLocationMenuItems.push(openLocationMenuItem)
                     }
 
+                    if (!settings.get_boolean("hide-hide-desktop-entry-menu-item") && !this._editDesktopFilesExtensionHideDesktopEntryMenuItem) {
+                        let hideDesktopEntryMenuItem = this.addAction(localizedHideStr, () => {
+                            hideDesktopEntry(appInfo)
+                            hideOverview()
+                        })
+
+                        let success = boundMoveMenuItemAfter(hideDesktopEntryMenuItem, localizedEditStr)
+                        if (!success) {
+                            boundMoveMenuItemAfter(hideDesktopEntryMenuItem, _('App Details'))
+                        }
+
+                        this._editDesktopFilesExtensionHideDesktopEntryMenuItem = hideDesktopEntryMenuItem
+                        addedHideDesktopEntryMenuItems.push(hideDesktopEntryMenuItem)
+                    }
+
                     // Keep track of menus that have been affected so they can be cleaned up later
                     if (!modifiedMenus.includes(this)) {
                         modifiedMenus.push(this)
@@ -127,7 +151,7 @@ export default class EditDesktopFilesExtension extends Extension {
      * Hides the overview if it is currently visible
      */
     hideOverview() {
-        if(Main.overview.visible) {
+        if (Main.overview.visible) {
             Main.overview.hide()
         }
     }
@@ -146,7 +170,7 @@ export default class EditDesktopFilesExtension extends Extension {
             let menuItem = menuItems[i]
             if (menuItem.label) {
                 if (menuItem.label.text == afterLabel) {
-                    this.moveMenuItem(menuItemToMove, i+1)
+                    this.moveMenuItem(menuItemToMove, i + 1)
                     return true
                 }
             }
@@ -174,10 +198,10 @@ export default class EditDesktopFilesExtension extends Extension {
 
             console.warn(`${metadata.name}: Custom edit command is missing '%U', falling back to default application`)
         }
-        
+
         // If the user has not selected a custom command, or the command is invalid, use the default application
         let uri = Gio.File.new_for_path(appInfo.filename).get_uri()
-        Gio.AppInfo.launch_default_for_uri_async(uri, null, null, () => {})
+        Gio.AppInfo.launch_default_for_uri_async(uri, null, null, () => { })
     }
 
     /**
@@ -205,7 +229,25 @@ export default class EditDesktopFilesExtension extends Extension {
         } else {
             // Fallback: open parent folder with default method without selecting the file
             let parent = file.get_parent()
-            Gio.AppInfo.launch_default_for_uri_async(parent.get_uri(), null, null, () => {})
+            Gio.AppInfo.launch_default_for_uri_async(parent.get_uri(), null, null, () => { })
+        }
+    }
+
+    hideDesktopEntry(metadata, settings, appInfo) {
+        try {
+            const keyFile = new GLib.KeyFile()
+
+            keyFile.load_from_file(appInfo.filename, GLib.KeyFileFlags.NONE)
+
+            keyFile.set_boolean('Desktop Entry', 'NoDisplay', true)
+
+            const file = Gio.File.new_for_path(appInfo.filename)
+
+            const keyFileData = keyFile.to_data()[0]
+
+            file.replace_contents(keyFileData, null, false, Gio.FileCreateFlags.REPLACE_DESTINATION, null)
+        } catch (e) {
+            logError(e, `${metadata.name}: Error hiding desktop file`)
         }
     }
 
@@ -215,8 +257,10 @@ export default class EditDesktopFilesExtension extends Extension {
         this._injectionManager = null
         this.removeEditMenuItems()
         this.removeOpenLocationMenuItems()
+        this.removeHideDesktopEntryMenuItems()
         this._addedEditMenuItems = null
         this._addedOpenLocationMenuItems = null
+        this._addedHideDesktopEntryMenuItems = null
         this._modifiedMenus = null
     }
 
@@ -228,7 +272,7 @@ export default class EditDesktopFilesExtension extends Extension {
         for (let menu of this._modifiedMenus) {
             delete menu._editDesktopFilesExtensionEditMenuItem
         }
-        
+
         for (let menuItem of this._addedEditMenuItems) {
             menuItem.destroy()
         }
@@ -244,11 +288,27 @@ export default class EditDesktopFilesExtension extends Extension {
         for (let menu of this._modifiedMenus) {
             delete menu._editDesktopFilesExtensionOpenLocationMenuItem
         }
-    
+
         for (let menuItem of this._addedOpenLocationMenuItems) {
             menuItem.destroy()
         }
 
         this._addedOpenLocationMenuItems.length = 0
+    }
+
+    /**
+     * Remove the `Hide Entry` MenuItems from the menus
+     * @returns {void}
+    */
+    removeHideDesktopEntryMenuItems() {
+        for (let menu of this._modifiedMenus) {
+            delete menu._editDesktopFilesExtensionHideDesktopEntryMenuItem
+        }
+
+        for (let menuItem of this._addedHideDesktopEntryMenuItems) {
+            menuItem.destroy()
+        }
+
+        this._addedHideDesktopEntryMenuItems.length = 0
     }
 }
