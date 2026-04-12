@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-07-20 19:08-0500\n"
+"POT-Creation-Date: 2026-04-12 13:41+0300\n"
 "PO-Revision-Date: 2026-04-11 11:02+0800\n"
 "Last-Translator: jiesou <84175239+jiesou@users.noreply.github.com>\n"
 "Language-Team: Chinese (simplified)\n"
@@ -17,13 +17,18 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: extension.js:43
+#: extension.js:44
 msgid "Edit Entry"
 msgstr "编辑桌面条目"
 
-#: extension.js:44
+#: extension.js:45
 msgid "Open Entry Location"
 msgstr "打开桌面条目位置"
+
+#: extension.js:46
+#, fuzzy
+msgid "Hide Entry"
+msgstr "编辑桌面条目"
 
 #: prefs.js:11 prefs.js:18
 msgid "General"
@@ -41,11 +46,16 @@ msgstr "隐藏 “编辑桌面条目” "
 msgid "Hide \"Open Entry Location\" Menu Item"
 msgstr "隐藏 “打开桌面条目位置” "
 
-#: prefs.js:36
+#: prefs.js:35
+#, fuzzy
+msgid "Hide \"Hide Entry\" Menu Item"
+msgstr "隐藏 “编辑桌面条目” "
+
+#: prefs.js:41
 msgid "Advanced"
 msgstr "高级"
 
-#: prefs.js:37
+#: prefs.js:42
 msgid ""
 "By default, the desktop entry will be opened with your system's default "
 "application for .desktop files (usually GNOME Text Editor).\n"
@@ -53,16 +63,21 @@ msgid ""
 "Custom commands must include \"%U\" to indicate where the filepath to the "
 "desktop file should be inserted. If missing, the default command will be "
 "used instead.\n"
-msgstr "默认情况下，桌面条目将使用 .desktop 文件的默认应用打开（一般是 GNOME 文本编辑器）\n\n自定义编辑命令必须包含 \"%U\"，来表示桌面文件路径的插入位置。如果缺少，则会回落到使用默认命令\n"
+msgstr ""
+"默认情况下，桌面条目将使用 .desktop 文件的默认应用打开（一般是 GNOME 文本编辑"
+"器）\n"
+"\n"
+"自定义编辑命令必须包含 \"%U\"，来表示桌面文件路径的插入位置。如果缺少，则会回"
+"落到使用默认命令\n"
 
-#: prefs.js:45
+#: prefs.js:50
 msgid "Use Custom Edit Command"
 msgstr "使用自定义编辑命令"
 
-#: prefs.js:46
+#: prefs.js:51
 msgid "Whether to edit desktop files using a custom command"
 msgstr "是否使用自定义命令编辑桌面文件"
 
-#: prefs.js:51
+#: prefs.js:56
 msgid "Custom Edit Command"
 msgstr "自定义编辑命令"

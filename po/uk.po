@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-07-20 19:08-0500\n"
+"POT-Creation-Date: 2026-04-12 13:41+0300\n"
 "PO-Revision-Date: 2025-07-20 19:10-0500\n"
 "Last-Translator: Eric Ostrowski <eric.ostrowski@live.com>\n"
 "Language-Team: English\n"
@@ -19,13 +19,18 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Gtranslator 48.0\n"
 
-#: extension.js:43
+#: extension.js:44
 msgid "Edit Entry"
 msgstr "Змінити запис"
 
-#: extension.js:44
+#: extension.js:45
 msgid "Open Entry Location"
 msgstr "Відкрити розташування запису"
+
+#: extension.js:46
+#, fuzzy
+msgid "Hide Entry"
+msgstr "Сховати запис"
 
 #: prefs.js:11 prefs.js:18
 msgid "General"
@@ -43,11 +48,16 @@ msgstr "Сховати пункт меню «Змінити запис»"
 msgid "Hide \"Open Entry Location\" Menu Item"
 msgstr "Сховати пункт меню «Відкрити розташування запису»"
 
-#: prefs.js:36
+#: prefs.js:35
+#, fuzzy
+msgid "Hide \"Hide Entry\" Menu Item"
+msgstr "Сховати пункт меню «Сховати запис»"
+
+#: prefs.js:41
 msgid "Advanced"
 msgstr "Додатково"
 
-#: prefs.js:37
+#: prefs.js:42
 msgid ""
 "By default, the desktop entry will be opened with your system's default "
 "application for .desktop files (usually GNOME Text Editor).\n"
@@ -64,15 +74,15 @@ msgstr ""
 "куди буде підставлено шлях до файлу. Якщо параметр відсутній, буде "
 "використано стандартний редактор.\n"
 
-#: prefs.js:45
+#: prefs.js:50
 msgid "Use Custom Edit Command"
 msgstr "Використовувати інший редактор"
 
-#: prefs.js:46
+#: prefs.js:51
 msgid "Whether to edit desktop files using a custom command"
 msgstr "Відкривати .desktop-файли у вказанному редакторі"
 
-#: prefs.js:51
+#: prefs.js:56
 msgid "Custom Edit Command"
 msgstr "Команда для запуску редактора"
 

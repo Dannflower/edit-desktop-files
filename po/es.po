@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-07-20 19:08-0500\n"
+"POT-Creation-Date: 2026-04-12 13:41+0300\n"
 "PO-Revision-Date: 2025-07-20 19:10-0500\n"
 "Last-Translator: Eric Ostrowski <eric.ostrowski@live.com>\n"
 "Language-Team: English\n"
@@ -17,13 +17,18 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Gtranslator 48.0\n"
 
-#: extension.js:43
+#: extension.js:44
 msgid "Edit Entry"
 msgstr "Editar entrada"
 
-#: extension.js:44
+#: extension.js:45
 msgid "Open Entry Location"
 msgstr "Abrir ubicación de la entrada"
+
+#: extension.js:46
+#, fuzzy
+msgid "Hide Entry"
+msgstr "Ocultar entrada"
 
 #: prefs.js:11 prefs.js:18
 msgid "General"
@@ -41,11 +46,16 @@ msgstr "Ocultar elemento del menú “Editar entrada” "
 msgid "Hide \"Open Entry Location\" Menu Item"
 msgstr "Ocultar elemento del menú “Abrir ubicación de la entrada”"
 
-#: prefs.js:36
+#: prefs.js:35
+#, fuzzy
+msgid "Hide \"Hide Entry\" Menu Item"
+msgstr "Ocultar elemento del menú “Ocultar entrada” "
+
+#: prefs.js:41
 msgid "Advanced"
 msgstr "Avanzado"
 
-#: prefs.js:37
+#: prefs.js:42
 msgid ""
 "By default, the desktop entry will be opened with your system's default "
 "application for .desktop files (usually GNOME Text Editor).\n"
@@ -62,16 +72,16 @@ msgstr ""
 "insertar la ruta al archivo de escritorio. Si falta, se utilizará el comando "
 "predeterminado.\n"
 
-#: prefs.js:45
+#: prefs.js:50
 msgid "Use Custom Edit Command"
 msgstr "Usar comando de edición personalizado"
 
-#: prefs.js:46
+#: prefs.js:51
 msgid "Whether to edit desktop files using a custom command"
 msgstr ""
 "Si se deben editar los archivos de escritorio usando un comando personalizado"
 
-#: prefs.js:51
+#: prefs.js:56
 msgid "Custom Edit Command"
 msgstr "Comando de edición personalizado"
 

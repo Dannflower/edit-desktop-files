@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-07-21 02:37+0200\n"
+"POT-Creation-Date: 2026-04-12 13:41+0300\n"
 "PO-Revision-Date: 2025-07-20 19:10-0500\n"
 "Last-Translator: Jan Schröder <jannomag@gmx.de>\n"
 "Language-Team: German\n"
@@ -16,6 +16,19 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Gtranslator 48.0\n"
+
+#: extension.js:44
+msgid "Edit Entry"
+msgstr "Eintrag bearbeiten"
+
+#: extension.js:45
+msgid "Open Entry Location"
+msgstr "Eintragsort öffnen"
+
+#: extension.js:46
+#, fuzzy
+msgid "Hide Entry"
+msgstr "Menüeintrag bearbeiten"
 
 #: prefs.js:11 prefs.js:18
 msgid "General"
@@ -33,11 +46,16 @@ msgstr "Menüeintrag „Eintrag bearbeiten“ ausblenden"
 msgid "Hide \"Open Entry Location\" Menu Item"
 msgstr "Menüeintrag „Eintragsort öffnen“ ausblenden"
 
-#: prefs.js:36
+#: prefs.js:35
+#, fuzzy
+msgid "Hide \"Hide Entry\" Menu Item"
+msgstr "Menüeintrag „Menüeintrag bearbeiten“ ausblenden"
+
+#: prefs.js:41
 msgid "Advanced"
 msgstr "Erweitert"
 
-#: prefs.js:37
+#: prefs.js:42
 msgid ""
 "By default, the desktop entry will be opened with your system's default "
 "application for .desktop files (usually GNOME Text Editor).\n"
@@ -53,31 +71,19 @@ msgstr ""
 "Pfad zur Desktop-Datei eingefügt werden soll. Fehlt dies, wird stattdessen "
 "der Standardbefehl verwendet.\n"
 
-#: prefs.js:45
+#: prefs.js:50
 msgid "Use Custom Edit Command"
 msgstr "Benutzerdefinierten Bearbeitungsbefehl verwenden"
 
-#: prefs.js:46
+#: prefs.js:51
 msgid "Whether to edit desktop files using a custom command"
 msgstr ""
 "Ob Desktop-Dateien mit einem benutzerdefinierten Befehl bearbeitet werden "
 "sollen"
 
-#: prefs.js:51
+#: prefs.js:56
 msgid "Custom Edit Command"
 msgstr "Benutzerdefinierter Bearbeitungsbefehl"
-
-#: extension.js:43
-msgid "Edit Entry"
-msgstr "Eintrag bearbeiten"
-
-#: extension.js:44
-msgid "Open Entry Location"
-msgstr "Eintragsort öffnen"
-
-#: extension.js:92 extension.js:108
-msgid "App Details"
-msgstr ""
 
 #~ msgid "Edit"
 #~ msgstr "Bearbeiten"
