@@ -123,7 +123,7 @@ export default class EditDesktopFilesExtension extends Extension {
 
                     if (!settings.get_boolean("hide-hide-desktop-entry-menu-item") && !this._editDesktopFilesExtensionHideDesktopEntryMenuItem) {
                         let hideDesktopEntryMenuItem = this.addAction(localizedHideStr, () => {
-                            hideDesktopEntry(appInfo)
+                            hideDesktopEntry(metadata, appInfo)
                             hideOverview()
                         })
 
@@ -233,7 +233,11 @@ export default class EditDesktopFilesExtension extends Extension {
         }
     }
 
-    hideDesktopEntry(metadata, settings, appInfo) {
+    /**
+     * Hide desktop entry.
+     * @param {Gio.AppInfo} appInfo - The AppInfo of the desktop entry whose location should be opened
+     */
+    hideDesktopEntry(metadata, appInfo) {
         try {
             const keyFile = new GLib.KeyFile()
 
