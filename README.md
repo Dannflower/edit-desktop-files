@@ -61,3 +61,11 @@ glib-compile-schemas schemas/
 gnome-extensions pack
 ```
 Release tags here on GitHub should be created any time a new release gets approved on the GNOME Extensions site. The tags should match the version number in the approved release on GNOME Extensions.
+
+#### Analyze the extension for GNOME extension issues
+```sh
+virtualenv venv
+. venv/bin/activate
+pip install -U shexli
+shexli editdesktopfiles@dannflower.shell-extension.zip
+```
