@@ -32,6 +32,7 @@ export default class EditDesktopFilesExtension extends Extension {
 
     enable() {
         this._settings = this.getSettings()
+        this._settingsSignalIds = []
         this._injectionManager = new InjectionManager()
         this._modifiedMenus = []
         this._addedEditMenuItems = []
@@ -44,16 +45,16 @@ export default class EditDesktopFilesExtension extends Extension {
         let localizedOpenLocationStr = gettext('Open Entry Location')
 
         // Listen for changes to the 'hide' settings
-        this._settings.connect('changed::hide-edit-menu-item', (settings, key) => {
+        this._settingsSignalIds.push(this._settings.connect('changed::hide-edit-menu-item', (settings, key) => {
             if (settings.get_boolean(key)) {
                 this.removeEditMenuItems()
             }
-        });
-        this._settings.connect('changed::hide-open-entry-location-menu-item', (settings, key) => {
+        }));
+        this._settingsSignalIds.push(this._settings.connect('changed::hide-open-entry-location-menu-item', (settings, key) => {
             if (settings.get_boolean(key)) {
                 this.removeOpenLocationMenuItems()
             }
-        });
+        }));
 
         // Extend the AppMenu's 'open' method to add an 'Edit' MenuItem
         // See: https://gitlab.gnome.org/GNOME/gnome-shell/-/blob/main/js/ui/appMenu.js
@@ -210,6 +211,7 @@ export default class EditDesktopFilesExtension extends Extension {
     }
 
     disable() {
+        this.disconnectSettingsSignals()
         this._settings = null
         this._injectionManager.clear()
         this._injectionManager = null
@@ -218,6 +220,19 @@ export default class EditDesktopFilesExtension extends Extension {
         this._addedEditMenuItems = null
         this._addedOpenLocationMenuItems = null
         this._modifiedMenus = null
+        this._settingsSignalIds = null
+    }
+
+    disconnectSettingsSignals() {
+        if (!this._settings || !this._settingsSignalIds) {
+            return
+        }
+
+        for (let signalId of this._settingsSignalIds) {
+            this._settings.disconnect(signalId)
+        }
+
+        this._settingsSignalIds = []
     }
 
     /**
