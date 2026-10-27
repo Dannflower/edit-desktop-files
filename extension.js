@@ -22,6 +22,7 @@ import Clutter from 'gi://Clutter'
 import {Extension, InjectionManager, gettext} from 'resource:///org/gnome/shell/extensions/extension.js'
 import {AppMenu} from 'resource:///org/gnome/shell/ui/appMenu.js'
 import * as Dialog from 'resource:///org/gnome/shell/ui/dialog.js'
+import * as MessageTray from 'resource:///org/gnome/shell/ui/messageTray.js'
 import * as ModalDialog from 'resource:///org/gnome/shell/ui/modalDialog.js'
 import * as Main from 'resource:///org/gnome/shell/ui/main.js'
 
@@ -29,8 +30,8 @@ import * as Main from 'resource:///org/gnome/shell/ui/main.js'
 * The Edit Desktop Files extension provides users with "Edit Entry", "Open Entry Location", and "Delete Desktop Entry"
 * buttons on the pop-up menu that appears when right-clicking an app icon in the app grid or dash.
 * When clicked, the backing desktop file is opened in the system's default application for desktop entries and
-* the location of the desktop file is opened in the system's default file manager. The delete action currently only
-* displays a confirmation dialog.
+* the location of the desktop file is opened in the system's default file manager. The delete action asks for
+* confirmation before deleting the desktop entry.
 */
 export default class EditDesktopFilesExtension extends Extension {
 
@@ -53,6 +54,7 @@ export default class EditDesktopFilesExtension extends Extension {
             description: gettext('Are you sure you want to delete the desktop entry for "%s"?'),
             cancelLabel: gettext('Cancel'),
             deleteLabel: gettext('Delete'),
+            errorTitle: gettext('Could not delete desktop entry'),
         }
 
         // Listen for changes to the 'hide' settings
@@ -84,6 +86,7 @@ export default class EditDesktopFilesExtension extends Extension {
                 const openDesktopFile = this.openDesktopFile
                 const openDesktopFileLocation = this.openDesktopFileLocation
                 const confirmDeleteDesktopEntry = this.confirmDeleteDesktopEntry
+                const deleteDesktopEntry = this.deleteDesktopEntry
                 const deleteConfirmation = localizedDeleteConfirmation
                 const hideOverview = this.hideOverview
                 const moveMenuItemAfter = this.moveMenuItemAfter
@@ -133,7 +136,7 @@ export default class EditDesktopFilesExtension extends Extension {
                     // `Delete Desktop Entry` MenuItem
                     if (!this._editDesktopFilesExtensionDeleteMenuItem) {
                         let deleteMenuItem = this.addAction(localizedDeleteStr, () => {
-                            confirmDeleteDesktopEntry(appInfo, deleteConfirmation)
+                            confirmDeleteDesktopEntry(appInfo, deleteConfirmation, deleteDesktopEntry)
                         })
 
                         // Keep the delete action after the other extension menu items
@@ -173,11 +176,11 @@ export default class EditDesktopFilesExtension extends Extension {
      * Show a confirmation dialog for deleting a desktop entry.
      * @param {Gio.AppInfo} appInfo - The application associated with the desktop entry
      */
-    confirmDeleteDesktopEntry(appInfo, localizedStrings) {
+    confirmDeleteDesktopEntry(appInfo, localizedStrings, deleteDesktopEntry) {
         const dialog = new ModalDialog.ModalDialog()
         const message = new Dialog.MessageDialogContent({
             title: localizedStrings.title,
-            description: localizedStrings.description.replace('%s', appInfo.get_name()),
+            description: localizedStrings.description.replace('%s', () => appInfo.get_name()),
         })
         dialog.contentLayout.add_child(message)
         dialog.setButtons([
@@ -189,13 +192,39 @@ export default class EditDesktopFilesExtension extends Extension {
             },
             {
                 label: localizedStrings.deleteLabel,
-                action: () => dialog.close(),
+                action: () => {
+                    dialog.close()
+                    deleteDesktopEntry(appInfo, localizedStrings)
+                },
             },
         ])
 
         if (!dialog.open()) {
             dialog.destroy()
         }
+    }
+
+    /**
+     * Delete a desktop entry and report failures through a Shell notification.
+     * @param {Gio.AppInfo} appInfo - The application associated with the desktop entry
+     * @param {Object} localizedStrings - Localized strings used for error reporting
+     */
+    deleteDesktopEntry(appInfo, localizedStrings) {
+        const file = Gio.File.new_for_path(appInfo.filename)
+        file.trash_async(GLib.PRIORITY_DEFAULT, null, (file, result) => {
+            try {
+                file.trash_finish(result)
+            } catch (error) {
+                const source = MessageTray.getSystemSource()
+                const notification = new MessageTray.Notification({
+                    source,
+                    title: localizedStrings.errorTitle,
+                    body: error.message,
+                    isTransient: false,
+                })
+                source.addNotification(notification)
+            }
+        })
     }
 
     /**
