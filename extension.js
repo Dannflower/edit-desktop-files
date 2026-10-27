@@ -18,15 +18,19 @@
  */
 import GLib from 'gi://GLib'
 import Gio from 'gi://Gio';
+import Clutter from 'gi://Clutter'
 import {Extension, InjectionManager, gettext} from 'resource:///org/gnome/shell/extensions/extension.js'
 import {AppMenu} from 'resource:///org/gnome/shell/ui/appMenu.js'
+import * as Dialog from 'resource:///org/gnome/shell/ui/dialog.js'
+import * as ModalDialog from 'resource:///org/gnome/shell/ui/modalDialog.js'
 import * as Main from 'resource:///org/gnome/shell/ui/main.js'
 
 /*
-* The Edit Desktop Files extension provides users with "Edit Entry" and "Open Entry Location" buttons on the pop-up menu
-* that appears when right-clicking an app icon in the app grid or dash.
+* The Edit Desktop Files extension provides users with "Edit Entry", "Open Entry Location", and "Delete Desktop Entry"
+* buttons on the pop-up menu that appears when right-clicking an app icon in the app grid or dash.
 * When clicked, the backing desktop file is opened in the system's default application for desktop entries and
-* the location of the desktop file is opened in the system's default file manager, respectively.
+* the location of the desktop file is opened in the system's default file manager. The delete action currently only
+* displays a confirmation dialog.
 */
 export default class EditDesktopFilesExtension extends Extension {
 
@@ -36,12 +40,20 @@ export default class EditDesktopFilesExtension extends Extension {
         this._modifiedMenus = []
         this._addedEditMenuItems = []
         this._addedOpenLocationMenuItems = []
+        this._addedDeleteMenuItems = []
 
         // Call gettext here explicitly so the MenuItems can be localized as part of this extension
         // as calling gettext inside the injected method will cause the strings to be localized as
         // part of the Gnome Shell itself.
         let localizedEditStr = gettext('Edit Entry')
         let localizedOpenLocationStr = gettext('Open Entry Location')
+        let localizedDeleteStr = gettext('Delete Desktop Entry')
+        let localizedDeleteConfirmation = {
+            title: localizedDeleteStr,
+            description: gettext('Are you sure you want to delete the desktop entry for "%s"?'),
+            cancelLabel: gettext('Cancel'),
+            deleteLabel: gettext('Delete'),
+        }
 
         // Listen for changes to the 'hide' settings
         this._settings.connectObject(
@@ -67,9 +79,12 @@ export default class EditDesktopFilesExtension extends Extension {
                 const modifiedMenus = this._modifiedMenus
                 const addedEditMenuItems = this._addedEditMenuItems
                 const addedOpenLocationMenuItems = this._addedOpenLocationMenuItems
+                const addedDeleteMenuItems = this._addedDeleteMenuItems
 
                 const openDesktopFile = this.openDesktopFile
                 const openDesktopFileLocation = this.openDesktopFileLocation
+                const confirmDeleteDesktopEntry = this.confirmDeleteDesktopEntry
+                const deleteConfirmation = localizedDeleteConfirmation
                 const hideOverview = this.hideOverview
                 const moveMenuItemAfter = this.moveMenuItemAfter
 
@@ -115,6 +130,25 @@ export default class EditDesktopFilesExtension extends Extension {
                         addedOpenLocationMenuItems.push(openLocationMenuItem)
                     }
 
+                    // `Delete Desktop Entry` MenuItem
+                    if (!this._editDesktopFilesExtensionDeleteMenuItem) {
+                        let deleteMenuItem = this.addAction(localizedDeleteStr, () => {
+                            confirmDeleteDesktopEntry(appInfo, deleteConfirmation)
+                        })
+
+                        // Keep the delete action after the other extension menu items
+                        let success = boundMoveMenuItemAfter(deleteMenuItem, localizedOpenLocationStr)
+                        if (!success) {
+                            success = boundMoveMenuItemAfter(deleteMenuItem, localizedEditStr)
+                        }
+                        if (!success) {
+                            boundMoveMenuItemAfter(deleteMenuItem, _('App Details'))
+                        }
+
+                        this._editDesktopFilesExtensionDeleteMenuItem = deleteMenuItem
+                        addedDeleteMenuItems.push(deleteMenuItem)
+                    }
+
                     // Keep track of menus that have been affected so they can be cleaned up later
                     if (!modifiedMenus.includes(this)) {
                         modifiedMenus.push(this)
@@ -132,6 +166,35 @@ export default class EditDesktopFilesExtension extends Extension {
     hideOverview() {
         if(Main.overview.visible) {
             Main.overview.hide()
+        }
+    }
+
+    /**
+     * Show a confirmation dialog for deleting a desktop entry.
+     * @param {Gio.AppInfo} appInfo - The application associated with the desktop entry
+     */
+    confirmDeleteDesktopEntry(appInfo, localizedStrings) {
+        const dialog = new ModalDialog.ModalDialog()
+        const message = new Dialog.MessageDialogContent({
+            title: localizedStrings.title,
+            description: localizedStrings.description.replace('%s', appInfo.get_name()),
+        })
+        dialog.contentLayout.add_child(message)
+        dialog.setButtons([
+            {
+                label: localizedStrings.cancelLabel,
+                action: () => dialog.close(),
+                key: Clutter.KEY_Escape,
+                default: true,
+            },
+            {
+                label: localizedStrings.deleteLabel,
+                action: () => dialog.close(),
+            },
+        ])
+
+        if (!dialog.open()) {
+            dialog.destroy()
         }
     }
 
@@ -219,8 +282,10 @@ export default class EditDesktopFilesExtension extends Extension {
         this._injectionManager = null
         this.removeEditMenuItems()
         this.removeOpenLocationMenuItems()
+        this.removeDeleteMenuItems()
         this._addedEditMenuItems = null
         this._addedOpenLocationMenuItems = null
+        this._addedDeleteMenuItems = null
         this._modifiedMenus = null
     }
 
@@ -262,5 +327,21 @@ export default class EditDesktopFilesExtension extends Extension {
         }
 
         this._addedOpenLocationMenuItems.length = 0
+    }
+
+    /**
+     * Remove the `Delete Desktop Entry` MenuItems from the menus
+     * @returns {void}
+     */
+    removeDeleteMenuItems() {
+        for (let menu of this._modifiedMenus) {
+            delete menu._editDesktopFilesExtensionDeleteMenuItem
+        }
+
+        for (let menuItem of this._addedDeleteMenuItems) {
+            menuItem.destroy()
+        }
+
+        this._addedDeleteMenuItems.length = 0
     }
 }
