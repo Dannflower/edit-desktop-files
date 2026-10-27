@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-07-21 02:37+0200\n"
+"POT-Creation-Date: 2026-10-26 19:17-0500\n"
 "PO-Revision-Date: 2025-07-20 19:10-0500\n"
 "Last-Translator: Jan Schröder <jannomag@gmx.de>\n"
 "Language-Team: German\n"
@@ -67,17 +67,35 @@ msgstr ""
 msgid "Custom Edit Command"
 msgstr "Benutzerdefinierter Bearbeitungsbefehl"
 
-#: extension.js:43
+#: extension.js:48
 msgid "Edit Entry"
 msgstr "Eintrag bearbeiten"
 
-#: extension.js:44
+#: extension.js:49
 msgid "Open Entry Location"
 msgstr "Eintragsort öffnen"
 
-#: extension.js:92 extension.js:108
-msgid "App Details"
+#: extension.js:50
+msgid "Delete Desktop Entry"
 msgstr ""
+
+#: extension.js:53
+#, javascript-format
+msgid "Are you sure you want to delete the desktop entry for \"%s\"?"
+msgstr ""
+
+#: extension.js:54
+msgid "Cancel"
+msgstr ""
+
+#: extension.js:55
+msgid "Delete"
+msgstr ""
+
+#: extension.js:56
+msgid "Could not delete desktop entry"
+msgstr ""
+
 
 #~ msgid "Edit"
 #~ msgstr "Bearbeiten"
