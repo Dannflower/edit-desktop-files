@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-26 19:17-0500\n"
+"POT-Creation-Date: 2026-10-27 21:08-0500\n"
 "PO-Revision-Date: 2025-07-20 19:10-0500\n"
 "Last-Translator: Eric Ostrowski <eric.ostrowski@live.com>\n"
 "Language-Team: English\n"
@@ -67,33 +67,50 @@ msgstr ""
 msgid "Custom Edit Command"
 msgstr "Comando de edición personalizado"
 
-#: extension.js:48
+#: extension.js:49
 msgid "Edit Entry"
 msgstr "Editar entrada"
 
-#: extension.js:49
+#: extension.js:50
 msgid "Open Entry Location"
 msgstr "Abrir ubicación de la entrada"
 
-#: extension.js:50
-msgid "Delete Desktop Entry"
+#: extension.js:51
+msgid "Move Entry to Trash"
 msgstr ""
 
-#: extension.js:53
-#, javascript-format
-msgid "Are you sure you want to delete the desktop entry for \"%s\"?"
-msgstr ""
-
-#: extension.js:54
-msgid "Cancel"
+#: extension.js:52
+msgid "Move to Trash"
 msgstr ""
 
 #: extension.js:55
-msgid "Delete"
+#, javascript-format
+msgid "Move the desktop entry for \"%s\" to Trash?"
 msgstr ""
 
 #: extension.js:56
+msgid "Cancel"
+msgstr ""
+
+#: extension.js:58
 msgid "Could not delete desktop entry"
+msgstr ""
+
+#: extension.js:59
+msgid "Could not move to Trash"
+msgstr ""
+
+#: extension.js:60
+#, javascript-format
+msgid ""
+"The desktop entry for \"%s\" could not be moved to Trash: %s\n"
+"\n"
+"You can permanently delete it with administrator authorization. This cannot "
+"be undone."
+msgstr ""
+
+#: extension.js:61
+msgid "Permanently Delete"
 msgstr ""
 
 

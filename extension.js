@@ -48,13 +48,17 @@ export default class EditDesktopFilesExtension extends Extension {
         // part of the Gnome Shell itself.
         let localizedEditStr = gettext('Edit Entry')
         let localizedOpenLocationStr = gettext('Open Entry Location')
-        let localizedDeleteStr = gettext('Delete Desktop Entry')
-        let localizedDeleteConfirmation = {
-            title: localizedDeleteStr,
-            description: gettext('Are you sure you want to delete the desktop entry for "%s"?'),
+        let localizedMoveDesktopEntryToTrashStr = gettext('Move Entry to Trash')
+        let localizedMoveToTrashStr = gettext('Move to Trash')
+        let localizedTrashConfirmation = {
+            title: localizedMoveDesktopEntryToTrashStr,
+            description: gettext('Move the desktop entry for "%s" to Trash?'),
             cancelLabel: gettext('Cancel'),
-            deleteLabel: gettext('Delete'),
+            moveToTrashLabel: localizedMoveToTrashStr,
             errorTitle: gettext('Could not delete desktop entry'),
+            trashFailedTitle: gettext('Could not move desktop entry to Trash'),
+            trashFailedDescription: gettext('The desktop entry for "%s" could not be moved to Trash: %s\n\nYou can attempt to permanently delete it with administrator authorization. This cannot be undone.'),
+            permanentDeleteLabel: gettext('Permanently Delete'),
         }
 
         // Listen for changes to the 'hide' settings
@@ -85,9 +89,8 @@ export default class EditDesktopFilesExtension extends Extension {
 
                 const openDesktopFile = this.openDesktopFile
                 const openDesktopFileLocation = this.openDesktopFileLocation
-                const confirmDeleteDesktopEntry = this.confirmDeleteDesktopEntry
-                const deleteDesktopEntry = this.deleteDesktopEntry
-                const deleteConfirmation = localizedDeleteConfirmation
+                const confirmDeleteDesktopEntry = this.confirmDeleteDesktopEntry.bind(this)
+                const trashConfirmation = localizedTrashConfirmation
                 const hideOverview = this.hideOverview
                 const moveMenuItemAfter = this.moveMenuItemAfter
 
@@ -133,13 +136,13 @@ export default class EditDesktopFilesExtension extends Extension {
                         addedOpenLocationMenuItems.push(openLocationMenuItem)
                     }
 
-                    // `Delete Desktop Entry` MenuItem
+                    // `Move to Trash` MenuItem
                     if (!this._editDesktopFilesExtensionDeleteMenuItem) {
-                        let deleteMenuItem = this.addAction(localizedDeleteStr, () => {
-                            confirmDeleteDesktopEntry(appInfo, deleteConfirmation, deleteDesktopEntry)
+                        let deleteMenuItem = this.addAction(localizedMoveDesktopEntryToTrashStr, () => {
+                            confirmDeleteDesktopEntry(appInfo, trashConfirmation)
                         })
 
-                        // Keep the delete action after the other extension menu items
+                        // Keep the trash action after the other extension menu items
                         let success = boundMoveMenuItemAfter(deleteMenuItem, localizedOpenLocationStr)
                         if (!success) {
                             success = boundMoveMenuItemAfter(deleteMenuItem, localizedEditStr)
@@ -176,7 +179,7 @@ export default class EditDesktopFilesExtension extends Extension {
      * Show a confirmation dialog for deleting a desktop entry.
      * @param {Gio.AppInfo} appInfo - The application associated with the desktop entry
      */
-    confirmDeleteDesktopEntry(appInfo, localizedStrings, deleteDesktopEntry) {
+    confirmDeleteDesktopEntry(appInfo, localizedStrings) {
         const dialog = new ModalDialog.ModalDialog()
         const message = new Dialog.MessageDialogContent({
             title: localizedStrings.title,
@@ -191,10 +194,10 @@ export default class EditDesktopFilesExtension extends Extension {
                 default: true,
             },
             {
-                label: localizedStrings.deleteLabel,
+                label: localizedStrings.moveToTrashLabel,
                 action: () => {
                     dialog.close()
-                    deleteDesktopEntry(appInfo, localizedStrings)
+                    this.deleteDesktopEntry(appInfo, localizedStrings)
                 },
             },
         ])
@@ -205,9 +208,9 @@ export default class EditDesktopFilesExtension extends Extension {
     }
 
     /**
-     * Delete a desktop entry and report failures through a Shell notification.
+     * Move a desktop entry to Trash, offering privileged permanent deletion if trashing fails.
      * @param {Gio.AppInfo} appInfo - The application associated with the desktop entry
-     * @param {Object} localizedStrings - Localized strings used for error reporting
+     * @param {Object} localizedStrings - Localized dialog and notification strings
      */
     deleteDesktopEntry(appInfo, localizedStrings) {
         const file = Gio.File.new_for_path(appInfo.filename)
@@ -215,16 +218,100 @@ export default class EditDesktopFilesExtension extends Extension {
             try {
                 file.trash_finish(result)
             } catch (error) {
-                const source = MessageTray.getSystemSource()
-                const notification = new MessageTray.Notification({
-                    source,
-                    title: localizedStrings.errorTitle,
-                    body: error.message,
-                    isTransient: false,
-                })
-                source.addNotification(notification)
+                this.confirmPermanentDeleteDesktopEntry(appInfo, localizedStrings, error)
             }
         })
+    }
+
+    /**
+     * Ask before permanently deleting a desktop entry through GVfs' admin backend.
+     * @param {Gio.AppInfo} appInfo - The application associated with the desktop entry
+     * @param {Object} localizedStrings - Localized dialog and notification strings
+     * @param {Error} trashError - The error from the failed trash operation
+     */
+    confirmPermanentDeleteDesktopEntry(
+        appInfo,
+        localizedStrings,
+        trashError
+    ) {
+        const dialog = new ModalDialog.ModalDialog()
+        const message = new Dialog.MessageDialogContent({
+            title: localizedStrings.trashFailedTitle,
+            description: localizedStrings.trashFailedDescription
+                .replace('%s', () => appInfo.get_name())
+                .replace('%s', () => trashError.message),
+        })
+        dialog.contentLayout.add_child(message)
+        dialog.setButtons([
+            {
+                label: localizedStrings.cancelLabel,
+                action: () => dialog.close(),
+                key: Clutter.KEY_Escape,
+                default: true,
+            },
+            {
+                label: localizedStrings.permanentDeleteLabel,
+                action: () => {
+                    dialog.close()
+                    this.permanentlyDeleteDesktopEntry(appInfo, localizedStrings)
+                },
+            },
+        ])
+
+        if (!dialog.open()) {
+            dialog.destroy()
+            this.notifyDeleteError(localizedStrings, trashError)
+        }
+    }
+
+    /**
+     * Permanently delete a desktop entry through GVfs' privileged admin backend.
+     * @param {Gio.AppInfo} appInfo - The application associated with the desktop entry
+     * @param {Object} localizedStrings - Localized notification strings
+     */
+    permanentlyDeleteDesktopEntry(appInfo, localizedStrings) {
+        const file = Gio.File.new_for_path(appInfo.filename)
+        const adminUri = file.get_uri().replace(/^file:/, 'admin:')
+        const adminFile = Gio.File.new_for_uri(adminUri)
+
+        adminFile.mount_enclosing_volume(
+            Gio.MountMountFlags.NONE,
+            null,
+            null,
+            (mountedFile, result) => {
+                try {
+                    mountedFile.mount_enclosing_volume_finish(result)
+                } catch (error) {
+                    if (!error.matches(Gio.io_error_quark(), Gio.IOErrorEnum.ALREADY_MOUNTED)) {
+                        this.notifyDeleteError(localizedStrings, error)
+                        return
+                    }
+                }
+
+                adminFile.delete_async(GLib.PRIORITY_DEFAULT, null, (file, deleteResult) => {
+                    try {
+                        file.delete_finish(deleteResult)
+                    } catch (error) {
+                        this.notifyDeleteError(localizedStrings, error)
+                    }
+                })
+            })
+    }
+
+    /**
+     * Keep delete failures in the GNOME Shell notification history.
+     * @param {Object} localizedStrings - Localized notification strings
+     * @param {Error} error - The operation error
+     */
+    notifyDeleteError(localizedStrings, error) {
+        const source = MessageTray.getSystemSource()
+        const notification = new MessageTray.Notification({
+            source,
+            title: localizedStrings.errorTitle,
+            body: error.message,
+            isTransient: false,
+        })
+        source.addNotification(notification)
     }
 
     /**
@@ -359,7 +446,7 @@ export default class EditDesktopFilesExtension extends Extension {
     }
 
     /**
-     * Remove the `Delete Desktop Entry` MenuItems from the menus
+     * Remove the `Move to Trash` MenuItems from the menus
      * @returns {void}
      */
     removeDeleteMenuItems() {

@@ -2,13 +2,13 @@
 
 <img width="389" height="266" alt="Screenshot From 2025-07-20 19-52-15" src="https://github.com/user-attachments/assets/40b702d2-2121-497f-93c5-87bc7840292d" />
 
-Adds "Edit Entry", "Open Entry Location", and "Delete Desktop Entry" options to the right-click menu of app icons in the app grid and dash.
+Adds "Edit Entry", "Open Entry Location", and "Move Desktop Entry to Trash" options to the right-click menu of app icons in the app grid and dash.
 
 - `Edit Entry` opens the .desktop file associated with the app using the system's default editor or a custom command configured in the extension's preferences.
 
 - `Open Entry Location` opens the folder containing the .desktop file in the default file manager.
 
-- `Delete Desktop Entry` asks for confirmation, then moves the .desktop file to the user's trash if supported and permitted. Errors, including permission failures or unsupported trash operations, are shown in a GNOME Shell notification; the extension does not request elevated permissions.
+- `Move Entry to Trash` asks for confirmation, then moves the .desktop file to the user's trash if supported and permitted. If that fails, it offers a separate confirmation to permanently delete the file through GVfs's `admin://` backend, which may request administrator authorization through Polkit. If the backend or authorization is unavailable, the error is shown in a GNOME Shell notification.
 
 ## Installation
 
