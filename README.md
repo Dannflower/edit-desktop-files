@@ -28,6 +28,17 @@ gnome-extensions enable editdesktopfiles@dannflower
 
 ### Development Commands
 
+#### Run tests
+The test suite uses Node.js built-in test runner and does not require installing npm dependencies:
+```sh
+node --test tests/*.test.js
+```
+
+To run inside a Node.js container:
+```sh
+tar -c extension.js tests | podman run --rm -i docker.io/library/node:22-alpine sh -c 'mkdir -p /workspace && tar -x -C /workspace && cd /workspace && node --test tests/*.test.js'
+```
+
 #### Start a nested Wayland session
 ```sh
 dbus-run-session -- gnome-shell --nested --wayland
