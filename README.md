@@ -28,6 +28,12 @@ gnome-extensions enable editdesktopfiles@dannflower
 
 ### Development Commands
 
+#### Run tests
+The test suite uses Node.js built-in test runner and does not require installing npm dependencies:
+```sh
+node --test tests/*.test.js
+```
+
 #### Start a nested Wayland session
 ```sh
 dbus-run-session -- gnome-shell --nested --wayland
